@@ -3,18 +3,18 @@
 open System.IO
 open FParsec
 
-let parseLine =
-    let point = pint32 .>> pstring "," .>>. pint32
-    point .>> pstring " -> " .>>. point
 
 let readLines path =
+    let parseLine =
+        let point = pint32 .>> pstring "," .>>. pint32
+        point .>> pstring " -> " .>>. point
+
     File.ReadLines(path)
     |> Seq.map (run parseLine)
     |> Seq.map (fun x ->
         match x with
         | Success (result, _, _) -> result
         | Failure (_, _, _) -> failwith "Invalid input")
-    |> List.ofSeq
 
 let points ((x1, y1), (x2, y2)) =
     let range a b =
@@ -38,7 +38,7 @@ let partTwo lines =
     lines
     |> Seq.collect points
     |> Seq.countBy id
-    |> Seq.filter (fun (_, v) -> v > 1)
+    |> Seq.filter (fun (k, v) -> v > 1)
     |> Seq.length
 
 let partOne lines =
